@@ -10,7 +10,7 @@ class ProductManager{
     constructor(){
         this.#products = [];
         this.#idProx = 1;
-        this.path= path.resolve(__dirname, "../Desafio/arrayObjetos.json")
+        this.path= path.resolve(__dirname, "../data/arrayObjetos.json")
     }
 
     //metodos
@@ -42,18 +42,20 @@ class ProductManager{
        }else{
         console.log("No se guardo");
        }*/
-        
-       
     };
 
-    getProducts(){ //debe devolver el arreglo con todos los productos creados hasta ese momento
+    async getProducts(){ //debe devolver el arreglo con todos los productos creados hasta ese momento
         //console.log(this.#products);
-        
-        let lecturaProductos=fs.readFileSync(this.path, {encoding:"utf-8"});
-        console.log(lecturaProductos);
+        if (fs.existsSync(this.path)) {
+            return JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
+        }else{
+            return []; //devuelve un array vacio si no existe
+        }
+        /*let lecturaProductos=fs.readFileSync(this.path, {encoding:"utf-8"});
+        console.log(lecturaProductos);*/
     }
 
-    getProductById(id) {
+    getProductById(id) {//muestra o trae un producto tomando como referencia su ID
         let lecturaProductos=fs.readFileSync(this.path, {encoding:"utf-8"});
         let productos = JSON.parse(lecturaProductos);
         const product = productos.find((product) => product.id === id);
@@ -65,7 +67,7 @@ class ProductManager{
         
     }
 
-    updateProduct(id, valorACambiar){
+    updateProduct(id, valorACambiar){//actualiza el valor de un producto
         let lecturaProductos=fs.readFileSync(this.path, {encoding:"utf-8"});
         let productos = JSON.parse(lecturaProductos);
         const productID = productos.findIndex((product) => product.id === id);
@@ -80,7 +82,7 @@ class ProductManager{
 
     }
 
-    deleteProduct(id){
+    deleteProduct(id){//elimina el producto desde su ID
         let lecturaProductos = fs.readFileSync(this.path, { encoding: "utf-8" });
         let productos = JSON.parse(lecturaProductos);
         const newProducts = productos.filter((product) => product.id !== id);
@@ -93,6 +95,6 @@ class ProductManager{
         }
     }
 
-}
+}//fin del class
 
 module.exports = ProductManager;

@@ -1,0 +1,29 @@
+[
+     {
+          "id": 1,
+          "title": "Hamburguesa",
+          "description": "El sabor de la carne 100% vacuna más deliciosa, acompañado del pan más esponjoso, kétchup, mostaza y cebolla triturada.",
+          "price": 2000,
+          "thumbnail": "img",
+          "code": "COD65",
+          "stock": 20
+     },
+     {
+          "id": 2,
+          "title": "Doble Cuarto de Libra con Queso",
+          "description": "Imaginá la sensación del clásico Cuarto de Libra. Imaginalo con un medallón de deliciosa carne 100% vacuna, queso cheddar, cebolla, kétchup y mostaza ¿Listo? Ahora duplicá esa sensación. Ya tenés el Doble Cuarto en la cabeza.",
+          "price": 3000,
+          "thumbnail": "img",
+          "code": "COD34",
+          "stock": 15
+     },
+     {
+          "id": 3,
+          "title": "McNífica",
+          "description": "En un mundo donde todos buscan lo nuevo todo el tiempo, la McNífica viene a rectificar lo bueno de ser clásico. Carne, queso cheddar, tomate, lechuga y cebolla, acompañados de kétchup, mostaza y mayonesa.",
+          "price": 2600,
+          "thumbnail": "img",
+          "code": "COD12",
+          "stock": 26
+     }
+]
