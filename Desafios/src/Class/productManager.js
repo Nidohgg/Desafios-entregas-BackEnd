@@ -1,48 +1,46 @@
 const fs=require("fs")
-const path = require('path');
 
 class ProductManager{
 
     #products;
     #idProx;
-    path;
     //constructor
-    constructor(){
+    constructor(rutaArchivo){
         this.#products = [];
         this.#idProx = 1;
-        this.path= path.resolve(__dirname, "../data/arrayObjetos.json")
+        this.path= rutaArchivo;
     }
 
     //metodos
-    addProduct(title, description, price, thumbnail, code, stock){//agregara el producto al arreglo d productos inicial
-        
-        if (!title || !description || !price || !thumbnail || !code || !stock) {
+    async addProduct(title, description, price, thumbnail, status, code, stock) {
+        if (!title || !description || !price || !thumbnail || !status || !code || !stock) {
             throw new Error("Todos los parametros son requeridos");
         }
         
         if (this.#products.some(product => product.code === code)) {
             throw new Error("ERROR, NO SE PUEDE VOLVER A CARGAR EL MISMO PRODUCTO");
         }
-
-        const product ={
+    
+        const product = {
             id: this.#idProx++,
             title, 
             description, 
             price, 
             thumbnail, 
+            status: true,
             code,
             stock
         };
-
-       this.#products.push(product);
-       fs.writeFileSync(this.path, JSON.stringify(this.#products, null, 5));
-       
-       /*if (fs.existsSync(this.path)) {
-        console.log("archivo guardado!!");
-       }else{
-        console.log("No se guardo");
-       }*/
-    };
+    
+        this.#products.push(product);
+    
+        try {
+            await fs.promises.writeFile(this.path, JSON.stringify(this.#products, null, 5));
+            console.log("Producto agregado y archivo guardado correctamente.");
+        } catch (error) {
+            throw new Error("Error al guardar el archivo de productos.");
+        }
+    }
 
     async getProducts(){ //debe devolver el arreglo con todos los productos creados hasta ese momento
         //console.log(this.#products);
@@ -67,31 +65,38 @@ class ProductManager{
         
     }
 
-    updateProduct(id, valorACambiar){//actualiza el valor de un producto
-        let lecturaProductos=fs.readFileSync(this.path, {encoding:"utf-8"});
-        let productos = JSON.parse(lecturaProductos);
-        const productID = productos.findIndex((product) => product.id === id);
-
-        if (productID != -1) {
-            productos[productID].title=valorACambiar;
-            fs.writeFileSync(this.path, JSON.stringify(productos, null, 5));
-            console.log("Producto actualizado!");
-        } else{
-            console.log("Producto No encontrado");
+    async updateProduct(id, valorACambiar) {
+        try {
+            let lecturaProductos = await fs.promises.readFile(this.path, { encoding: "utf-8" });
+            let productos = JSON.parse(lecturaProductos);
+            const productID = productos.findIndex((product) => product.id === id);
+    
+            if (productID !== -1) {
+                productos[productID].title = valorACambiar;
+                await fs.promises.writeFile(this.path, JSON.stringify(productos, null, 5));
+                console.log("Producto actualizado!");
+            } else {
+                console.log("Producto no encontrado");
+            }
+        } catch (error) {
+            console.error("Error al actualizar el producto:", error);
         }
-
     }
 
-    deleteProduct(id){//elimina el producto desde su ID
-        let lecturaProductos = fs.readFileSync(this.path, { encoding: "utf-8" });
-        let productos = JSON.parse(lecturaProductos);
-        const newProducts = productos.filter((product) => product.id !== id);
-
-        if (newProducts.length !== productos.length) {
-            fs.writeFileSync(this.path, JSON.stringify(newProducts, null, 5));
-            console.log("Producto eliminado con éxito");
-        } else {
-            console.log("Producto no encontrado");
+    async deleteProduct(id) {
+        try {
+            let lecturaProductos = await fs.promises.readFile(this.path, { encoding: "utf-8" });
+            let productos = JSON.parse(lecturaProductos);
+            const newProducts = productos.filter((product) => product.id !== id);
+    
+            if (newProducts.length !== productos.length) {
+                await fs.promises.writeFile(this.path, JSON.stringify(newProducts, null, 5));
+                console.log("Producto eliminado con éxito");
+            } else {
+                console.log("Producto no encontrado");
+            }
+        } catch (error) {
+            console.error("Error al eliminar el producto:", error);
         }
     }
 
