@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Time Products</title>
+</head>
+<body>
+    <h1>Real Time Products</h1>
+    <ul id="product-list">
+        <!-- Lista de productos se actualizará aquí -->
+    </ul>
+
+    <form id="new-product-form">
+        <input type="text" id="product-name" placeholder="Product Name">
+        <input type="number" id="product-price" placeholder="Product Price">
+        <button type="submit">Add Product</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+   <script>
+    const socket = io();
+
+    const productList = document.getElementById('product-list');
+
+    // Escucha el evento 'products' para recibir la lista de productos actualizada
+    socket.on('products', (products) => {
+        // Limpia la lista de productos existente
+        productList.innerHTML = '';
+
+        // Renderiza los productos en la lista
+        products.forEach(product => {
+            const li = document.createElement('li');
+            li.textContent = `${product.name} - Price: $${product.price}`;
+            
+            // Agrega un botón de eliminar junto a cada producto
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Eliminar';
+            deleteButton.addEventListener('click', () => {
+                // Emite un evento al servidor para eliminar el producto
+                console.log('Botón de eliminar clickeado');
+                socket.emit('deleteProduct', product.id);
+            });
+
+            li.appendChild(deleteButton);
+            productList.appendChild(li);
+        });
+    });
+
+    // Escucha el evento del formulario para agregar un nuevo producto
+    document.getElementById('new-product-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const productName = document.getElementById('product-name').value;
+        const productPrice = document.getElementById('product-price').value;
+
+        // Emite un evento al servidor para agregar un nuevo producto
+        socket.emit('newProduct', { name: productName, price: productPrice });
+    });
+</script>
+</body>
+</html>
+
